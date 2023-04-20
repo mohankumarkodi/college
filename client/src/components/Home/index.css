@@ -1,0 +1,19 @@
+.home-invites-card{
+    background-color: grey;
+    width: 500px;
+    height: 200px;
+    margin-top: 50px;
+    border-radius: 25px;
+
+}
+.home-charts-align{
+    width:100%;
+}
+.home-bg-container{
+    width: 80%;
+}
+.container-fluid{
+    padding-left: 0px;
+    padding-right: 0px;
+    
+}

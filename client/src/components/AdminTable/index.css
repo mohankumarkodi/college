@@ -1,0 +1,47 @@
+.admin-nowrap{
+    white-space: nowrap;
+}
+.admin-table-container{
+    width: 80%;
+}
+.invite-btn {
+    font-size: 16px;
+    padding: 5px 10px;
+  }
+.admin-table {
+    font-size: 12px;
+  }
+  
+  @media (min-width: 576px) {
+    .table {
+      font-size: 10px;
+    }
+    .invite-btn {
+        font-size: 15px;
+        padding: 3px 6px;
+      }
+  }
+  
+  @media (min-width: 768px) {
+    .table {
+      font-size: 15px;
+    }
+    .invite-btn {
+        font-size: 22px;
+        padding: 8px 16px;
+      }
+  }
+  
+  @media (min-width: 992px) {
+    .table {
+      font-size: 18px;
+    }
+    .invite-btn {
+        font-size: 15px;
+        padding: 10px 20px;
+      }
+  }
+
+  
+
+  
