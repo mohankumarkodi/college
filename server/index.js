@@ -67,7 +67,7 @@ app.post("/addstudent/", async (req, res) => {
   const role = "student";
   
   connection.query(
-    "INSERT INTO user_details(name,email, date_of_birth,gender,role,password) values(?,?,?,?,?,?)",
+    "INSERT INTO user_details(fullname,email, date_of_birth,gender,role,password) values(?,?,?,?,?,?)",
     [name, email, date_of_birth, gender, role,hashedPassword],
     (error, results) => {
       if (error) {

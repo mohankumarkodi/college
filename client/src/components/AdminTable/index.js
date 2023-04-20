@@ -46,7 +46,7 @@ function MyVerticallyCenteredModal(props) {
   const formik = useFormik({
     initialValues: {
       username: "",
-      name: "",
+      fullname: "",
       email: "",
       dateOfBirth: "",
       gender: "",
@@ -87,7 +87,7 @@ function MyVerticallyCenteredModal(props) {
       </Modal.Header>
       <Modal.Body>
         <Row className="justify-content-center mt-5">
-          <Col md={5}>
+          <Col md={6}>
             <Form noValidate onSubmit={formik.handleSubmit}>
               <Form.Group controlId="username">
                 <Form.Label>Username</Form.Label>
@@ -224,7 +224,7 @@ function AdminTable() {
             {studentList.map((item) => (
               <tr key={item.id}>
                 <td>{item.id}</td>
-                <td>{item.name}</td>
+                <td>{item.fullname}</td>
                 <td>{item.gender}</td>
                 <td>{item.email}</td>
                 <td>
