@@ -11,34 +11,14 @@ import { useNavigate } from "react-router-dom";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string().required("Required"),
-  name: Yup.string()
+  fullname: Yup.string()
     .required("Required")
-    .matches("^[A-Za-z]+(?:[A-Za-z]+)?$", "needed alphabets only"),
+    .matches("/^[A-Za-z]+[A-Za-z]+$/", "needed alphabets only"),
   email: Yup.string().email("Invalid email").required("Required"),
   dateOfBirth: Yup.date().required("Required"),
   gender: Yup.string().required("Required"),
 });
 
-const data = [
-  {
-    id: 1,
-    studentName: "John Doe",
-    gender: "Male",
-    dateOfBirth: "1995-01-01",
-  },
-  {
-    id: 2,
-    studentName: "Jane Smith",
-    gender: "Female",
-    dateOfBirth: "1998-03-15",
-  },
-  {
-    id: 3,
-    studentName: "Bob Johnson",
-    gender: "Male",
-    dateOfBirth: "2000-07-20",
-  },
-];
 
 function MyVerticallyCenteredModal(props) {
   const [errorMsg, setErrorMsg] = useState("");
@@ -99,15 +79,15 @@ function MyVerticallyCenteredModal(props) {
                   {formik.errors.username}
                 </Form.Control.Feedback>
               </Form.Group>
-              <Form.Group controlId="name">
-                <Form.Label>Name</Form.Label>
+              <Form.Group controlId="fullname">
+                <Form.Label>FullName</Form.Label>
                 <Form.Control
                   type="text"
-                  {...formik.getFieldProps("name")}
-                  isInvalid={formik.touched.name && formik.errors.name}
+                  {...formik.getFieldProps("fullname")}
+                  isInvalid={formik.touched.fullname && formik.errors.fullname}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {formik.errors.name}
+                  {formik.errors.fullname}
                 </Form.Control.Feedback>
               </Form.Group>
 
