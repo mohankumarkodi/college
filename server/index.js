@@ -79,7 +79,7 @@ app.post("/addstudent/", async (req, res) => {
     }
   );
 });
-
+const rl = "student"
 // // CREATE USER
 // app.post("/createuser/", async (req, res) => {
 //   const { id, name, email, date_of_birth, gender, role, password } = req.body;
@@ -120,21 +120,21 @@ app.post("/addstudent/", async (req, res) => {
 //   }
 // };
 
-// // GET USERS
-// app.get("/getusers/", tokenAuthentication, (req, res) => {
-//   connection.query("SELECT * FROM user_details", (error, results) => {
-//     if (error) {
-//       res.status(400);
-//       res.send(error);
-//     } else {
-//       results.map((each) => {
-//         delete each.password;
-//       });
-//       console.log(results);
-//       res.send(results);
-//     }
-//   });
-// });
+// GET USERS
+app.get("/getstudents/", (req, res) => {
+  connection.query("SELECT * FROM user_details where role=?",[rl], (error, results) => {
+    if (error) {
+      res.status(400);
+      res.send(error);
+    } else {
+      results.map((each) => {
+        delete each.password;
+      });
+      console.log(results);
+      res.send(results);
+    }
+  });
+});
 
 // // GET PRODUCTS
 // app.get("/getproducts/", (req, res) => {

@@ -1,5 +1,5 @@
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import SideBar from "../SideBar";
@@ -11,7 +11,9 @@ import { useNavigate } from "react-router-dom";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string().required("Required"),
-  name: Yup.string().required("Required").matches("^[A-Za-z]+(?:[A-Za-z]+)?$","needed alphabets only")  ,
+  name: Yup.string()
+    .required("Required")
+    .matches("^[A-Za-z]+(?:[A-Za-z]+)?$", "needed alphabets only"),
   email: Yup.string().email("Invalid email").required("Required"),
   dateOfBirth: Yup.date().required("Required"),
   gender: Yup.string().required("Required"),
@@ -20,21 +22,21 @@ const SignupSchema = Yup.object().shape({
 const data = [
   {
     id: 1,
-    studentName: 'John Doe',
-    gender: 'Male',
-    dateOfBirth: '1995-01-01',
+    studentName: "John Doe",
+    gender: "Male",
+    dateOfBirth: "1995-01-01",
   },
   {
     id: 2,
-    studentName: 'Jane Smith',
-    gender: 'Female',
-    dateOfBirth: '1998-03-15',
+    studentName: "Jane Smith",
+    gender: "Female",
+    dateOfBirth: "1998-03-15",
   },
   {
     id: 3,
-    studentName: 'Bob Johnson',
-    gender: 'Male',
-    dateOfBirth: '2000-07-20',
+    studentName: "Bob Johnson",
+    gender: "Male",
+    dateOfBirth: "2000-07-20",
   },
 ];
 
@@ -43,7 +45,7 @@ function MyVerticallyCenteredModal(props) {
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      username:"",
+      username: "",
       name: "",
       email: "",
       dateOfBirth: "",
@@ -87,7 +89,7 @@ function MyVerticallyCenteredModal(props) {
         <Row className="justify-content-center mt-5">
           <Col md={5}>
             <Form noValidate onSubmit={formik.handleSubmit}>
-            <Form.Group controlId="username">
+              <Form.Group controlId="username">
                 <Form.Label>Username</Form.Label>
                 <Form.Control
                   {...formik.getFieldProps("username")}
@@ -171,11 +173,24 @@ function MyVerticallyCenteredModal(props) {
 
 function AdminTable() {
   const [modalShow, setModalShow] = React.useState(false);
+  const [studentList, setStudentList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("/getstudents")
+      .then((respone) => {
+        console.log(respone);
+        setStudentList(respone.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
+  console.log(studentList);
   return (
     <Container fluid className="d-flex flex-row">
-    <SideBar />
+      <SideBar />
       <Container fluid className="p-5 admin-table-container">
-        
         <Container fluid className="d-flex d-row justify-content-around mb-3">
           <h1 className="align-center">StudentDetails</h1>
           <Button variant="primary" onClick={() => setModalShow(true)}>
@@ -188,30 +203,42 @@ function AdminTable() {
           onHide={() => setModalShow(false)}
         />
 
-<Table responsive striped bordered hover className="admin-table admin-nowrap">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Student Name</th>
-          <th>Gender</th>
-          <th>Date of Birth</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.id}>
-            <td>{item.id}</td>
-            <td>{item.studentName}</td>
-            <td>{item.gender}</td>
-            <td>{item.dateOfBirth}</td>
-            <td>
-              <Button variant="primary" className="admin-invite-btn ">Invite</Button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
+        <Table
+          responsive
+          striped
+          bordered
+          hover
+          className="admin-table admin-nowrap"
+        >
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Student Name</th>
+              <th>Gender</th>
+              <th>Email</th>
+              <th>Date of Birth</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {studentList.map((item) => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item.name}</td>
+                <td>{item.gender}</td>
+                <td>{item.email}</td>
+                <td>
+                  {new Date(item.date_of_birth).toLocaleDateString("en-GB")}
+                </td>
+                <td>
+                  <Button variant="primary" className="admin-invite-btn ">
+                    Invite
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </Container>
     </Container>
   );
