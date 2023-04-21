@@ -4,6 +4,7 @@ import LoginPage from "./components/LoginPage";
 import Home from "./components/Home";
 import AdminTable from "./components/AdminTable";
 import Quiz from "./components/Questions";
+import SampleTable from "./components/Sampletable";
 
 import "./index.css";
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/login" exact element={<LoginPage />} />
         <Route path="/admintable" exact element={<AdminTable/>}/>
         <Route path="/quiz" exact element={<Quiz/>}/>
+        <Route path="/table" exact element={<SampleTable/>}/>
       </Routes>
     </BrowserRouter>
   );
