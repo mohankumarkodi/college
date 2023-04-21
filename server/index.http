@@ -66,35 +66,12 @@ Content-Type: application/json
 
 ###
 
+POST http://localhost:5000/sendmail/
+Content-Type: application/json
 
+{
+    "to" : "mohankumarkodi00@gmail.com",
+    "link":"http://localhost:3000/quiz"
+}
 
-# POST http://localhost:5000/createitem/
-# Content-Type: application/json
-
-# # {
-# #     "title":"Joker Bobble Head Action Figure",
-# #     "image_url":"https://rukminim1.flixcart.com/image/832/832/kn97te80/action-figure/3/r/h/joker-heath-ledger-batman-bobble-head-with-mobile-holder-sh-1-original-imagfz9kbwgpvgtv.jpeg?q=70",
-# #     "category":"toys",
-# #     "brand":"GCT",
-# #     "price":"445"
-# # }
-
-# ###
-
-# POST http://localhost:5000/createorder/
-# Content-Type: application/json
-
-# # {
-# #     "id":"1",
-# #     "category":"toys",
-# #     "item":"Batman Bobble Head Action Figure",
-# #     "firstname":"naidu",
-# #     "lastname":"kotha",
-# #     "email":"naidu@gmail.com",
-# #     "mobile_no":"9848150931",
-# #     "address":"Kirlampudi",
-# #     "pincode":"533431",
-# #     "state":"Andhra Pradesh"
-# # }
-
-# ###
+###

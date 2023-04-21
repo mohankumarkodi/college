@@ -1,4 +1,4 @@
-import { Container, Button} from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import MyVerticallyCenteredModal from "../AddStudentForm";
@@ -6,12 +6,29 @@ import SideBar from "../SideBar";
 import "./index.css";
 import axios from "axios";
 
-
-
-
 function AdminTable() {
   const [modalShow, setModalShow] = React.useState(false);
   const [studentList, setStudentList] = useState([]);
+  const [sendMailInfo, setSendMailInfo] = useState("");
+
+  const onclickInvite = (email) => {
+    const link = "http://localhost:3000/quiz";
+    // console.log(email, link);
+    const body = { to: email, link };
+    console.log(body);
+    axios
+      .post("/sendmail", body)
+      .then((response) => {
+        console.log(response.data);
+        if (response.statusText === "OK") {
+          setSendMailInfo(response.data);
+        }
+      })
+      .catch((e) => {
+        setSendMailInfo(e);
+      });
+  };
+  console.log(sendMailInfo);
 
   useEffect(() => {
     axios
@@ -24,14 +41,21 @@ function AdminTable() {
         console.log(e);
       });
   }, []);
-  console.log(studentList);
+  // console.log(studentList);
   return (
     <Container fluid className="d-flex flex-row">
       <SideBar />
       <Container fluid className="p-5 admin-table-container">
-        <Container fluid className="d-flex d-row justify-content-between mr-2 mb-4 ml-5">
+        <Container
+          fluid
+          className="d-flex d-row justify-content-between mr-2 mb-4 ml-5"
+        >
           <h1 className="align-center">StudentDetails</h1>
-          <Button className="admin-addstudent-btn" variant="primary" onClick={() => setModalShow(true)}>
+          <Button
+            className="admin-addstudent-btn"
+            variant="primary"
+            onClick={() => setModalShow(true)}
+          >
             Add Student
           </Button>
         </Container>
@@ -69,7 +93,11 @@ function AdminTable() {
                   {new Date(item.date_of_birth).toLocaleDateString("en-GB")}
                 </td>
                 <td>
-                  <Button variant="primary" className="admin-invite-btn ">
+                  <Button
+                    onClick={() => onclickInvite(item.email)}
+                    variant="primary"
+                    className="admin-invite-btn "
+                  >
                     Invite
                   </Button>
                 </td>

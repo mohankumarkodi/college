@@ -2,16 +2,24 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const bodyParser = require("body-parser");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+// const { ServiceBroker } = require("moleculer");
+// const MailService = require("moleculer-mail");
 
+const PORT = process.env.PORT;
 const app = express();
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-
-const connection = require("./connection");
+const client = require("./client");
+// const broker = new ServiceBroker();
 
 const dbConnection = () => {
   try {
-    connection.connect();
+    client.connect();
+    console.log("Connected to PostgreSQL server");
   } catch (e) {
     console.log(e);
     process.exit(1);
@@ -20,75 +28,281 @@ const dbConnection = () => {
 
 dbConnection();
 
+// TOKEN AUTHENTICATION
+const tokenAuthentication = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  console.log(authHeader);
+
+  if (authHeader === undefined) {
+    res.status(401).send("Access denied. No token provided.");
+  } else {
+    const jwtToken = authHeader.split(" ")[1];
+    jwt.verify(jwtToken, "secret_key", (error, payload) => {
+      if (error) {
+        res.status(401).send(error);
+      } else {
+        next();
+      }
+    });
+  }
+};
+
+// TEST
+app.get("/test/", (err, res) => {
+  client.query("SELECT * FROM user_details", (err, results) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(
+        `Connected to user ${results.rows[0].username} from postgreSQL`
+      );
+      res.send("Connected to postgreSQL Database");
+    }
+  });
+});
+
 // LOGIN
 app.post("/login/", (req, res) => {
   const { username, password } = req.body;
   // console.log(username, password);
-  connection.query(
-    "SELECT * FROM user_details WHERE name=? and role=?",
-    [username, "admin"],
-    (error, results) => {
-      if (error) {
-        res.status(400).send(error);
-        return;
-      }
-      if (results.length === 0) {
-        res.status(404);
-        res.send("User not found");
-        return;
-      }
-      const storedPassword = results[0].password;
-      bcrypt.compare(password, storedPassword, (err, result) => {
-        if (err) {
-          res.status(500).send("An error occurred while verifying password");
-          return;
-        }
-        if (!result) {
-          res.status(401).send("Invalid Password");
-          return;
-        }
-        const payload = { username: username };
-        const jwtToken = jwt.sign(payload, "secret_key");
-        delete results[0].password;
-        res.send({ jwtToken, results });
-        // console.log(results[0].password);
-      });
+  const query = {
+    text: "SELECT * FROM user_details WHERE username=$1",
+    values: [username],
+  };
+  // console.log(query);
+  client.query(query, (error, results) => {
+    if (error) {
+      res.status(400).send(error);
+      return;
     }
-  );
+    if (results.rows.length === 0) {
+      res.status(404);
+      res.send("User not found");
+      return;
+    }
+    const storedPassword = results.rows[0].password;
+    bcrypt.compare(password, storedPassword, (err, result) => {
+      if (err) {
+        res.status(500).send("An error occurred while verifying password");
+        return;
+      }
+      if (!result) {
+        res.status(401).send("Invalid Password");
+        return;
+      }
+      const payload = { username: username };
+      const jwtToken = jwt.sign(payload, "secret_key");
+      delete results.rows[0].password;
+      res.send({ jwtToken, results: results.rows });
+      // console.log(results.rows[0].password);
+    });
+  });
 });
 
-// add student
+// ADD STUDENT
 app.post("/addstudent/", async (req, res) => {
-  const { fullname, email, date_of_birth, gender } = req.body;
-  const password  = "123123";
-  // console.log(username, password, role);
+  const { username, fullname, email, dateOfBirth, gender } = req.body;
+  const password = "123123";
   const hashedPassword = await bcrypt.hash(password, 10);
-  //   console.log(hashedPassword);
   const role = "student";
-  
-  connection.query(
-    "INSERT INTO user_details(fullname,email, date_of_birth,gender,role,password) values(?,?,?,?,?,?)",
-    [fullname, email, date_of_birth, gender, role,hashedPassword],
-    (error, results) => {
-      if (error) {
-        res.status(400);
-        res.send(error);
-      } else {
-        res.status(200).send(results);
-      }
+
+  const query = {
+    text: "INSERT INTO user_details(username, fullname, email, date_of_birth, gender, role, password) values($1,$2,$3,$4,$5,$6,$7)",
+    values: [
+      username,
+      fullname,
+      email,
+      dateOfBirth,
+      gender,
+      role,
+      hashedPassword,
+    ],
+  };
+
+  client.query(query, (error, results) => {
+    if (error) {
+      res.status(400).send(error);
+    } else {
+      res.status(200).send(results);
     }
-  );
+  });
 });
-const rl = "student"
-// // CREATE USER
-// app.post("/createuser/", async (req, res) => {
-//   const { id, name, email, date_of_birth, gender, role, password } = req.body;
+
+// GET STUDENTS
+app.get("/getstudents/", (req, res) => {
+  const role = "student";
+  const query = {
+    text: "SELECT * FROM user_details WHERE role=$1",
+    values: [role],
+  };
+  client.query(query, (error, results) => {
+    if (error) {
+      res.status(400).send(error);
+    } else {
+      const rows = results.rows;
+      rows.forEach((row) => {
+        delete row.password;
+      });
+      console.log(rows);
+      res.send(rows);
+    }
+  });
+});
+
+// SEND MAIL
+// app.post("/sendmail/", (req, res) => {
+//   const { to, link } = req.body;
+//   console.log(to, link);
+//   const mailService = broker.createService({
+//     mixins: [MailService],
+//     settings: {
+//       transport: {
+//         host: "smtp.gmail.com",
+//         port: 465,
+//         secure: true,
+//         auth: {
+//           user: "naidukutility@gmail.com",
+//           pass: process.env.EMAIL_PASSWORD,
+//         },
+//       },
+//     },
+//     actions: {
+//       sendWelcomeEmail(ctx) {
+//         const email = {
+//           from: "naidukutility@gmail.com",
+//           to: [to],
+//           subject: "Exam invitation!",
+//           html: `<h1>Dear Student,</h1><p>We have scheduled a test for you. Please go through the link ${link} and login with your credentials to take you test.</p>`,
+//         };
+//         return this.send(email)
+//           .then(() => {
+//             return { message: "Exam email sent successfully!" };
+//           })
+//           .catch((error) => {
+//             return { error: error.message };
+//           });
+//       },
+//     },
+//   });
+
+//   broker.start().then(() => {
+//     broker
+//       .call("mail.sendWelcomeEmail")
+//       .then((response) => console.log(response))
+//       .catch((error) => console.error(error));
+//   });
+// });
+
+// mail
+app.post("/sendmail/", (req, res) => {
+  const { to, link } = req.body;
+  console.log(to, link);
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_ACCOUNT,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.GMAIL_ACCOUNT,
+      to: to,
+      subject: "Exam invitation!",
+      html: `<h1>Dear Student,</h1><p>We have scheduled a test for you. Please go through the link ${link} and login with your credentials to take you test.</p>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        res.send(error);
+        console.log(error);
+      } else {
+        console.log(info);
+        res.send(info);
+      }
+    });
+  } catch (e) {
+    console.log(e);
+    res.send(e);
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running`);
+});
+
+// const express = require("express");
+// const bcrypt = require("bcrypt");
+// const cors = require("cors");
+// const jwt = require("jsonwebtoken");
+
+// const app = express();
+// app.use(express.json());
+// app.use(cors());
+
+// const connection = require("./connection");
+
+// const dbConnection = () => {
+//   try {
+//     connection.connect();
+//   } catch (e) {
+//     console.log(e);
+//     process.exit(1);
+//   }
+// };
+
+// dbConnection();
+
+// // LOGIN
+// app.post("/login/", (req, res) => {
+//   const { username, password } = req.body;
+//   // console.log(username, password);
+//   connection.query(
+//     "SELECT * FROM user_details WHERE name=? and role=?",
+//     [username, "admin"],
+//     (error, results) => {
+//       if (error) {
+//         res.status(400).send(error);
+//         return;
+//       }
+//       if (results.length === 0) {
+//         res.status(404);
+//         res.send("User not found");
+//         return;
+//       }
+//       const storedPassword = results[0].password;
+//       bcrypt.compare(password, storedPassword, (err, result) => {
+//         if (err) {
+//           res.status(500).send("An error occurred while verifying password");
+//           return;
+//         }
+//         if (!result) {
+//           res.status(401).send("Invalid Password");
+//           return;
+//         }
+//         const payload = { username: username };
+//         const jwtToken = jwt.sign(payload, "secret_key");
+//         delete results[0].password;
+//         res.send({ jwtToken, results });
+//         // console.log(results[0].password);
+//       });
+//     }
+//   );
+// });
+
+// // add student
+// app.post("/addstudent/", async (req, res) => {
+//   const { fullname, email, date_of_birth, gender } = req.body;
+//   const password  = "123123";
 //   // console.log(username, password, role);
 //   const hashedPassword = await bcrypt.hash(password, 10);
 //   //   console.log(hashedPassword);
+//   const role = "student";
+
 //   connection.query(
-//     "INSERT INTO user_details(id,name,email, date_of_birth,gender,role,password) values(?,?,?,?,?,?,?)",
-//     [id, name, email, date_of_birth, gender, role, hashedPassword],
+//     "INSERT INTO user_details(fullname,email, date_of_birth,gender,role,password) values(?,?,?,?,?,?)",
+//     [fullname, email, date_of_birth, gender, role,hashedPassword],
 //     (error, results) => {
 //       if (error) {
 //         res.status(400);
@@ -99,42 +313,105 @@ const rl = "student"
 //     }
 //   );
 // });
+// const rl = "student"
+// // // CREATE USER
+// // app.post("/createuser/", async (req, res) => {
+// //   const { id, name, email, date_of_birth, gender, role, password } = req.body;
+// //   // console.log(username, password, role);
+// //   const hashedPassword = await bcrypt.hash(password, 10);
+// //   //   console.log(hashedPassword);
+// //   connection.query(
+// //     "INSERT INTO user_details(id,name,email, date_of_birth,gender,role,password) values(?,?,?,?,?,?,?)",
+// //     [id, name, email, date_of_birth, gender, role, hashedPassword],
+// //     (error, results) => {
+// //       if (error) {
+// //         res.status(400);
+// //         res.send(error);
+// //       } else {
+// //         res.status(200).send(results);
+// //       }
+// //     }
+// //   );
+// // });
 
-// MIDDLEWARE AUTHENTICATION
-// const tokenAuthentication = (req, res, next) => {
-//   const authHeader = req.headers.authorization;
-//   console.log(authHeader);
+// // MIDDLEWARE AUTHENTICATION
+// // const tokenAuthentication = (req, res, next) => {
+// //   const authHeader = req.headers.authorization;
+// //   console.log(authHeader);
 
-//   if (authHeader === undefined) {
-//     res.status(401).send("Access denied. No token provided.");
-//   } else {
-//     const jwtToken = authHeader.split(" ")[1];
-//     jwt.verify(jwtToken, "secret_key", (error, payload) => {
-//       if (error) {
-//         res.status(401).send(error);
-//       } else {
-//         // req.username = payload.username;
-//         next();
-//       }
-//     });
-//   }
-// };
+// //   if (authHeader === undefined) {
+// //     res.status(401).send("Access denied. No token provided.");
+// //   } else {
+// //     const jwtToken = authHeader.split(" ")[1];
+// //     jwt.verify(jwtToken, "secret_key", (error, payload) => {
+// //       if (error) {
+// //         res.status(401).send(error);
+// //       } else {
+// //         // req.username = payload.username;
+// //         next();
+// //       }
+// //     });
+// //   }
+// // };
 
-// GET USERS
-app.get("/getstudents/", (req, res) => {
-  connection.query("SELECT * FROM user_details where role=?",[rl], (error, results) => {
-    if (error) {
-      res.status(400);
-      res.send(error);
-    } else {
-      results.map((each) => {
-        delete each.password;
-      });
-      console.log(results);
-      res.send(results);
-    }
-  });
-});
+// // GET USERS
+// app.get("/getstudents/", (req, res) => {
+//   connection.query("SELECT * FROM user_details where role=?",[rl], (error, results) => {
+//     if (error) {
+//       res.status(400);
+//       res.send(error);
+//     } else {
+//       results.map((each) => {
+//         delete each.password;
+//       });
+//       console.log(results);
+//       res.send(results);
+//     }
+//   });
+// });
+
+// //send
+// app.post("/sendmail/", (req, res) => {
+//   let { to, link } = req.body;
+//   const mailService = broker.createService({
+//     mixins: [MailService],
+//     settings: {
+//       transport: {
+//         host: "smtp.gmail.com",
+//         port: 465,
+//         secure: true,
+//         auth: {
+//           user: "naidukutility@gmail.com",
+//           pass: process.env.EMAIL_PASSWORD,
+//         },
+//       },
+//     },
+//     actions: {
+//       sendWelcomeEmail(ctx) {
+//         const email = {
+//           from: "naidukutility@gmail.com",
+//           to: "siva.naidu@recykal.com",
+//           subject: "Exam invitation!",
+//           html: `<h1>Dear Student,</h1><p>We have scheduled a test for you. Please go through the link ${link} and login with your credentials to take you test.</p>`,
+//         };
+//         return this.send(email)
+//           .then(() => {
+//             return { message: "Exam email sent successfully!" };
+//           })
+//           .catch((error) => {
+//             return { error: error.message };
+//           });
+//       },
+//     },
+//   });
+
+//   broker.start().then(() => {
+//     broker
+//       .call("mail.sendWelcomeEmail")
+//       .then((response) => console.log(response))
+//       .catch((error) => console.error(error));
+//   });
+// });
 
 // // GET PRODUCTS
 // app.get("/getproducts/", (req, res) => {
@@ -477,6 +754,6 @@ app.get("/getstudents/", (req, res) => {
 //   }
 // });
 
-app.listen(5000, () => {
-  console.log("Server running at http://localhost:5000");
-});
+// app.listen(5000, () => {
+//   console.log("Server running at http://localhost:5000");
+// });
