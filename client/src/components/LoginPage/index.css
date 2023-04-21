@@ -1,29 +1,42 @@
-.login-container{
+.login-container {
     height: 100vh;
-    
     width: 100%;
     justify-content: center;
     align-items: center;
-}
-.login-submit-btn{
-    width:345px;
-}
-.login-card-continer{
+  }
+  
+  .login-submit-btn {
+    width: 345px;
+  }
+  
+  .login-card-continer {
     width: 500px;
-}
-.login-label-names{
-    color: #000;
-}
-.login-error-msg{
+  }
+  
+  .login-input-container {
+    height: 80px;
+  }
+  
+  .login-error-msg {
     font-size: 20px;
     font-weight: 300;
-    color:red;
-}
-.login-labels{
+    color: red;
+  }
+  
+  .login-labels {
     color: #000;
-}
-.login-form-card{
-  width: 100%;
-
-  border-radius: 15px;
-}
+    font-size: 14px;
+  }
+  
+  .login-form-card {
+    width: 100%;
+    border-radius: 15px;
+  }
+  
+  .is-invalid ~ .invalid-feedback,
+  .is-invalid ~ .invalid-tooltip,
+  .was-validated :invalid ~ .invalid-feedback,
+  .was-validated :invalid ~ .invalid-tooltip {
+    font-size: 10px;
+  }
+  

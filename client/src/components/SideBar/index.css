@@ -6,6 +6,9 @@
   .sidebar-nav-container{
     border: none;
   }
+
+  
+    
   
   .sidebar-names {
     font-size: 150%;
@@ -46,6 +49,7 @@
   a {
     color: rgb(148, 163, 184) !important;
     margin-left: 8%;
+    border: none !important;
 
   }
   .container-fluid{

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, Button, Card, Container } from "react-bootstrap";
-import './index.css'
+import { Form, Button, Container } from "react-bootstrap";
+import "./index.css";
 
 function Quiz() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
   const questions = [
     {
       id: 1,
@@ -63,13 +64,23 @@ function Quiz() {
     },
   ];
 
+  const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
 
   const handleOptionChange = (event) => {
-    setSelectedOptions({
-      ...selectedOptions,
-      [event.target.name]: event.target.value,
-    });
+    const { name, value } = event.target;
+    setSelectedOptions({ ...selectedOptions, [name]: value });
+  };
+  const handleNextQuestion = () => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
   };
 
   const handleSubmit = (event) => {
@@ -79,37 +90,61 @@ function Quiz() {
       if (selectedOptions[question.id] === question.correctAnswer) {
         score += 1;
       }
-      console.log(score)
+      console.log(score);
     });
-    navigate("/", {navigate:true})
+    navigate("/", { navigate: true });
   };
 
+  const currentQuestionData = questions[currentQuestion];
+
   return (
- 
-      <Card>
-        <Card.Body>
-          <Form className="quiz-bg-container d-flex flex-column justify-content-center align-items-center" onSubmit={handleSubmit}>
-            {questions.map((question) => (
-              <Container fluid key={question.id} className="question m-3 p-3">
-                <h5 className="question-heading">{question.text}</h5>
-                {question.options.map((option) => (
-                  <Form.Check
-                    key={option.id}
-                    type="radio"
-                    label={option.text}
-                    name={question.id}
-                    value={option.id}
-                    checked={selectedOptions[question.id] === option.id}
-                    onChange={handleOptionChange}
-                    className="question-options"
-                  />
-                ))}
-              </Container>
-            ))}
-            <Button className="mt-2 " size={"lg"} type="submit">Submit</Button>
-          </Form>
-        </Card.Body>
-      </Card>
+    <Container
+      fluid
+      className="quiz-bg-container d-flex flex-column justify-content-center align-items-center"
+    >
+      <Form
+        className="d-flex flex-column question-form-container"
+        onSubmit={handleSubmit}
+      >
+        <h5 className="question-heading">{currentQuestionData.text}</h5>
+        {currentQuestionData.options.map((option) => (
+          <Form.Check
+            key={option.id}
+            type="radio"
+            label={option.text}
+            name={currentQuestionData.id}
+            value={option.id}
+            checked={selectedOptions[currentQuestionData.id] === option.id}
+            onChange={handleOptionChange}
+            className="question-options text-center"
+          />
+        ))}
+        <div className="mt-2 d-flex justify-content-between">
+          <Button
+            variant="primary"
+            size={"lg"}
+            onClick={handlePreviousQuestion}
+            disabled={currentQuestion === 0}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="primary"
+            size={"lg"}
+            onClick={handleNextQuestion}
+            disabled={currentQuestion === questions.length - 1}
+          >
+            Next
+          </Button>
+        </div>
+        {currentQuestion === questions.length - 1 && (
+          <Button className="mt-2 " size={"lg"} type="submit">
+            Submit
+          </Button>
+        )}
+      </Form>
+    </Container>
   );
 }
+
 export default Quiz;
