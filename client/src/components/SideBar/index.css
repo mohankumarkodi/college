@@ -60,11 +60,18 @@
     margin-bottom: 25px;
     width: 100%;
   }
+  @media (max-width: 949px) {
+    .side-bar-profile-details{
+      color: rgb(148, 163, 184);
+      font-size: 50%;  
+      margin-left: 10px;
+    }
+  }
   
   @media screen and (max-width: 768px) {
     .sidebar-container {
       width: 100%;
-      height: auto;
+      height: 100vh;
       padding: 20px;
     }
   
@@ -73,6 +80,11 @@
       margin-right: 0;
       margin-bottom: 20px;
     }
+    .side-bar-profile-details{
+        color: rgb(148, 163, 184);
+        font-size: 60%;  
+        margin-left: 10px;
+      }
   
     .sidebar-names {
       font-size: 100%;

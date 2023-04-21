@@ -59,7 +59,7 @@ app.post("/login/", (req, res) => {
 
 // add student
 app.post("/addstudent/", async (req, res) => {
-  const { name, email, date_of_birth, gender } = req.body;
+  const { fullname, email, date_of_birth, gender } = req.body;
   const password  = "123123";
   // console.log(username, password, role);
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -68,7 +68,7 @@ app.post("/addstudent/", async (req, res) => {
   
   connection.query(
     "INSERT INTO user_details(fullname,email, date_of_birth,gender,role,password) values(?,?,?,?,?,?)",
-    [name, email, date_of_birth, gender, role,hashedPassword],
+    [fullname, email, date_of_birth, gender, role,hashedPassword],
     (error, results) => {
       if (error) {
         res.status(400);
