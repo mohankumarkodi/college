@@ -1,11 +1,14 @@
 .quiz-bg-container{
     width: 100%;
+    /* background-color: antiquewhite; */
     
 }
 .question{
-    background-color: rgb(225, 223, 223);
+    background-color: white;
     border-radius: 5px;
     width: 600px;
+    box-shadow: 0 0.5px 0.5px;
+    margin: 10px;
 }
 .question-heading{
     font-size: 25px;

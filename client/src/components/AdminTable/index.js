@@ -13,7 +13,7 @@ const SignupSchema = Yup.object().shape({
   username: Yup.string().required("Required"),
   fullname: Yup.string()
     .required("Required")
-    .matches("/^[A-Za-z]+[A-Za-z]+$/", "needed alphabets only"),
+    .matches("^[a-zA-Z]+(?:[ ]?[a-zA-Z]+)*$", "needed alphabets only"),
   email: Yup.string().email("Invalid email").required("Required"),
   dateOfBirth: Yup.date().required("Required"),
   gender: Yup.string().required("Required"),

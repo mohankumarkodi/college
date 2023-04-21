@@ -79,17 +79,18 @@ function Quiz() {
       if (selectedOptions[question.id] === question.correctAnswer) {
         score += 1;
       }
+      console.log(score)
     });
     navigate("/", {navigate:true})
   };
 
   return (
  
-      <Card className="quiz-bg-container">
+      <Card>
         <Card.Body>
           <Form className="quiz-bg-container d-flex flex-column justify-content-center align-items-center" onSubmit={handleSubmit}>
             {questions.map((question) => (
-              <Container fluid key={question.id} className="question m-2 p-3">
+              <Container fluid key={question.id} className="question m-3 p-3">
                 <h5 className="question-heading">{question.text}</h5>
                 {question.options.map((option) => (
                   <Form.Check
