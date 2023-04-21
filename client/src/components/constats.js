@@ -112,3 +112,174 @@ export const questionsSet1 = [
       correctAnswer: "c",
     },
   ];
+  export const questionsSet3 = [
+    {
+      id: 1,
+      text: "1.How many States in India?",
+      options: [
+        { id: "a", text: "28" },
+        { id: "b", text: "27" },
+        { id: "c", text: "25" },
+        { id: "d", text: "26" },
+      ],
+      correctAnswer: "a",
+    },
+    {
+      id: 2,
+      text: "2. who is the Indian cricket team Captain?",
+      options: [
+        { id: "a", text: "Kohli" },
+        { id: "b", text: "Dhoni" },
+        { id: "c", text: "Rohit" },
+        { id: "d", text: "Hardik" },
+      ],
+      correctAnswer: "c",
+    },
+    {
+      id: 3,
+      text: "3. 99/3=??",
+      options: [
+        { id: "a", text: "22" },
+        { id: "b", text: "15" },
+        { id: "c", text: "57" },
+        { id: "d", text: "33" },
+      ],
+      correctAnswer: "d",
+    },
+    {
+      id: 4,
+      text: "4. 8*6?",
+      options: [
+        { id: "a", text: "75" },
+        { id: "b", text: "62" },
+        { id: "c", text: "48" },
+        { id: "d", text: "39" },
+      ],
+      correctAnswer: "c",
+    },
+    {
+      id: 5,
+      text: "5. What is the formula for salt?",
+      options: [
+        { id: "a", text: "H2O" },
+        { id: "b", text: "CO2" },
+        { id: "c", text: "NaCl" },
+        { id: "d", text: "HCl" },
+      ],
+      correctAnswer: "c",
+    },
+  ];
+  export const questionsSet4 = [
+    {
+      id: 1,
+      text: "1.How many States in India?",
+      options: [
+        { id: "a", text: "28" },
+        { id: "b", text: "27" },
+        { id: "c", text: "25" },
+        { id: "d", text: "26" },
+      ],
+      correctAnswer: "a",
+    },
+    {
+      id: 2,
+      text: "2. who is the Indian cricket team Captain?",
+      options: [
+        { id: "a", text: "Kohli" },
+        { id: "b", text: "Dhoni" },
+        { id: "c", text: "Rohit" },
+        { id: "d", text: "Hardik" },
+      ],
+      correctAnswer: "c",
+    },
+    {
+      id: 3,
+      text: "3. 99/3=??",
+      options: [
+        { id: "a", text: "22" },
+        { id: "b", text: "15" },
+        { id: "c", text: "57" },
+        { id: "d", text: "33" },
+      ],
+      correctAnswer: "d",
+    },
+    {
+      id: 4,
+      text: "4. 8*6?",
+      options: [
+        { id: "a", text: "75" },
+        { id: "b", text: "62" },
+        { id: "c", text: "48" },
+        { id: "d", text: "39" },
+      ],
+      correctAnswer: "c",
+    },
+    {
+      id: 5,
+      text: "5. What is the formula for salt?",
+      options: [
+        { id: "a", text: "H2O" },
+        { id: "b", text: "CO2" },
+        { id: "c", text: "NaCl" },
+        { id: "d", text: "HCl" },
+      ],
+      correctAnswer: "c",
+    },
+  ];
+  export const questionsSet5 = [
+    {
+      id: 1,
+      text: "1.How many States in India?",
+      options: [
+        { id: "a", text: "28" },
+        { id: "b", text: "27" },
+        { id: "c", text: "25" },
+        { id: "d", text: "26" },
+      ],
+      correctAnswer: "a",
+    },
+    {
+      id: 2,
+      text: "2. who is the Indian cricket team Captain?",
+      options: [
+        { id: "a", text: "Kohli" },
+        { id: "b", text: "Dhoni" },
+        { id: "c", text: "Rohit" },
+        { id: "d", text: "Hardik" },
+      ],
+      correctAnswer: "c",
+    },
+    {
+      id: 3,
+      text: "3. 99/3=??",
+      options: [
+        { id: "a", text: "22" },
+        { id: "b", text: "15" },
+        { id: "c", text: "57" },
+        { id: "d", text: "33" },
+      ],
+      correctAnswer: "d",
+    },
+    {
+      id: 4,
+      text: "4. 8*6?",
+      options: [
+        { id: "a", text: "75" },
+        { id: "b", text: "62" },
+        { id: "c", text: "48" },
+        { id: "d", text: "39" },
+      ],
+      correctAnswer: "c",
+    },
+    {
+      id: 5,
+      text: "5. What is the formula for salt?",
+      options: [
+        { id: "a", text: "H2O" },
+        { id: "b", text: "CO2" },
+        { id: "c", text: "NaCl" },
+        { id: "d", text: "HCl" },
+      ],
+      correctAnswer: "c",
+    },
+  ];
