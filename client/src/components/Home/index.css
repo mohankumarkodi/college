@@ -1,17 +1,28 @@
-.home-invites-card{
+.home-invites-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.3);
+    min-height: 150px;
+    min-width: 200px;
+    transition: all 0.3s ease-in-out;
+    width: 400px;
+    height: 150px;
+  }
+  
+  .home-invites-card:hover {
+    box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.5);
+    transform: scale(1.05);
+  }
+  
+  
+/* .home-invites-card{
     background-color: grey;
-    width: 500px;
-    height: 200px;
-    margin-top: 50px;
-    border-radius: 25px;
-
+    
 }
 .home-charts-align{
     width:100%;
-}
-.home-bg-container{
-    width: 80%;
-}
+}*/
+
 .container-fluid{
     padding-left: 0px;
     padding-right: 0px;

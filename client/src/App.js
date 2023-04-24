@@ -7,7 +7,7 @@ import Quiz from "./components/Questions";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute/AdminProtectedRoute";
 import Sidebar1 from "./components/SampleSideBar";
-import App2 from "./components/DatePicker";
+
 
 import "./index.css";
 import Cookies from "js-cookie";
@@ -19,7 +19,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/km" exact element={<Sidebar1 />} />
-        <Route path="/date" exact element={<App2 />} />
+
         <Route
           path="/"
           exact

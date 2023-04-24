@@ -1,4 +1,11 @@
-import { Container, Button, Pagination } from "react-bootstrap";
+import {
+  Container,
+  Button,
+  Pagination,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import MyVerticallyCenteredModal from "../AddStudentForm";
@@ -9,14 +16,22 @@ import Sidebar1 from "../SampleSideBar";
 
 function AdminTable() {
   const [modalShow, setModalShow] = React.useState(false);
+  const [inviteModal, setInviteModal] = useState(false);
   const [studentList, setStudentList] = useState([]);
   const [sendMailInfo, setSendMailInfo] = useState("");
   const [activePage, setActivePage] = useState(1);
+  const [selectedMail, setSelectedMail] = useState("");
   const ITEMS_PER_PAGE = 5;
 
   const onclickInvite = (email) => {
+    toggleInviteModal();
+    setSelectedMail(email);
+  };
+
+  const sendInvite = () => {
+    const email = selectedMail;
     const link = "http://localhost:3000/quiz";
-    // console.log(email, link);
+    console.log(email, link);
     const body = { to: email, link };
     console.log(body);
     axios
@@ -30,8 +45,32 @@ function AdminTable() {
       .catch((e) => {
         setSendMailInfo(e);
       });
+    toggleInviteModal();
   };
+
   console.log(sendMailInfo);
+
+  const toggleInviteModal = () => {
+    setInviteModal(!inviteModal);
+  };
+
+  const emailModal = () => {
+    return (
+      <Modal centered size="lg" show={inviteModal} onHide={toggleInviteModal}>
+        <ModalHeader>
+          <ModalBody>
+            <h5>Do you want to send exam Invitation to {selectedMail} ?</h5>
+            <Container className="d-flex flex-row justify-content-center mt-5 m-auto">
+              <Button className="invite-model-btn-yes" onClick={sendInvite}>
+                Yes
+              </Button>
+              <Button onClick={toggleInviteModal}>No</Button>
+            </Container>
+          </ModalBody>
+        </ModalHeader>
+      </Modal>
+    );
+  };
 
   useEffect(() => {
     axios
@@ -81,7 +120,7 @@ function AdminTable() {
   return (
     <Container fluid className="d-flex flex-row">
       {/* <SideBar /> */}
-      <Sidebar1/>
+      <Sidebar1 />
       <Container fluid className="p-5 admin-table-container">
         <Container
           fluid
@@ -146,6 +185,7 @@ function AdminTable() {
           <Pagination>{renderPageNumbers()}</Pagination>
         </Container>
       </Container>
+      {emailModal()}
     </Container>
   );
 }
