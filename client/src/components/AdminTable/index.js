@@ -2,9 +2,10 @@ import { Container, Button, Pagination } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import MyVerticallyCenteredModal from "../AddStudentForm";
-import SideBar from "../SideBar";
+//import SideBar from "../SideBar";
 import "./index.css";
 import axios from "axios";
+import Sidebar1 from "../SampleSideBar";
 
 function AdminTable() {
   const [modalShow, setModalShow] = React.useState(false);
@@ -79,7 +80,8 @@ function AdminTable() {
 
   return (
     <Container fluid className="d-flex flex-row">
-      <SideBar />
+      {/* <SideBar /> */}
+      <Sidebar1/>
       <Container fluid className="p-5 admin-table-container">
         <Container
           fluid
@@ -140,9 +142,9 @@ function AdminTable() {
             </tbody>
           </Table>
         </Container>
-        <div className="d-flex justify-content-center">
+        <Container fluid className="d-flex justify-content-center">
           <Pagination>{renderPageNumbers()}</Pagination>
-        </div>
+        </Container>
       </Container>
     </Container>
   );

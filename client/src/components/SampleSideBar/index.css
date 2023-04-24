@@ -1,0 +1,10 @@
+.sidebar2-container{
+     display: flex;
+    height: 100vh;
+    overflow: scroll initial ; 
+    width: 18%;
+    margin: 0px !important;
+    }
+.sidebar2-footer{
+    padding: 20px 5px;
+}

@@ -40,7 +40,7 @@ const Charts = () => {
   return (
     <Container fluid className="charts-bg-container d-flex flex-row justify-content-center">
       <ResponsiveContainer
-        width="20%"
+        width="30%"
         height={500}
       >
         <BarChart

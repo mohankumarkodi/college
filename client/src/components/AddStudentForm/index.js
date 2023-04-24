@@ -33,7 +33,7 @@ function MyVerticallyCenteredModal(props) {
         .then((response) => {
           setErrorMsg("");
           if (response.statusText === "OK") {
-            navigate("/", { replace: true });
+            navigate("/admintable", { replace: true });
           }
         })
         .catch((e) => {
