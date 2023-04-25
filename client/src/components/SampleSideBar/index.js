@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 const Sidebar1 = () => {
   const role = Cookies.get("role");
-  //rconst { fullname, email } = JSON.parse(Cookies.get("userDetails"));
+  //const { fullname, email } = JSON.parse(Cookies.get("userDetails"));
   const navigate = useNavigate();
   // const today = new Date();
   // const date = today.getDate();
@@ -80,6 +80,9 @@ const Sidebar1 = () => {
                     </NavLink>
                     <NavLink exact to="/quiz" activeClassName="activeClicked">
                       <CDBSidebarMenuItem icon="table">Start Exam</CDBSidebarMenuItem>
+                    </NavLink>
+                    <NavLink exact to="/studentmarks" activeClassName="activeClicked">
+                      <CDBSidebarMenuItem icon="table">Marks Table</CDBSidebarMenuItem>
                     </NavLink>
                     <NavLink
                       exact

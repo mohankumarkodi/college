@@ -200,8 +200,9 @@ app.post("/studentscore/", (req, res) => {
 });
 
 // GET STUDENT SCORE
-app.get("/getscore/", (req, res) => {
+app.post("/getscore/", (req, res) => {
   const { email } = req.body;
+  console.log(email);
   const query = {
     text: "SELECT * FROM test_details WHERE student_email = ($1)",
     values: [email],
@@ -218,8 +219,6 @@ app.get("/getscore/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running`);
 });
-
-
 
 // const express = require("express");
 // const bcrypt = require("bcrypt");

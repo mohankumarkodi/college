@@ -1,59 +1,4 @@
-# ###
-
-GET http://localhost:5000/getstudents/
-
-# ###
-
-# GET http://localhost:5000/getproducts/
-
-
-###
-
-POST http://localhost:5000/createuser/
-Content-Type: application/json
-
-{   "id":2,
-    "name":"mohan1",
-    "email":"mohankumarkodi00@gmail.com",
-    "date_of_birth":"2000-08-02",
-    "gender":"male",
-    "role":"admin",
-    "password":"Mohan@123"
-}
-
-
-###
-
-POST http://localhost:5000/addstudent/
-Content-Type: application/json
-
-{   "name":"mohan",
-    "email":"mohankumarkodi00@gmail.com",
-    "date_of_birth":"2000-08-02",
-    "gender":"male"
-}
-
-###
-
-# PATCH http://localhost:5000/updateuser/uday
-# Content-Type: application/json
-
-# {
-#     "firstname":"uday",
-#     "email":"uday@gmail.com",
-#     "mobile":"9876543210"
-# }
-
-# ###
-
-# PATCH http://localhost:5000/changepassword/revi/
-# Content-Type: application/json
-
-# {
-#     "oldPassword":"revi@143",
-#     "password":"revi@123"
-# }
-
+GET http://localhost:5000/test/
 ###
 
 POST http://localhost:5000/login/
@@ -61,8 +6,29 @@ Content-Type: application/json
 
 {
     "username":"naidu",
-    "password":"naidu@123"
+    "password":"Batman@16"
 }
+
+###
+
+POST http://localhost:5000/addstudent/
+Content-Type: application/json
+
+{
+    "username":"revi",
+    "fullname":"Sabbi Ravi",
+    "email":"ravisabbi7036@gmail.com",
+    "date_of_birth":"1999-05-27",
+    "gender":"Male"
+}
+
+###
+
+POST http://localhost:5000/sendmail/
+
+###
+
+GET http://localhost:5000/getstudents/
 
 ###
 
@@ -70,8 +36,29 @@ POST http://localhost:5000/sendmail/
 Content-Type: application/json
 
 {
-    "to" : "mohankumarkodi00@gmail.com",
+    "to":"mohankumarkodi00@gmail.com",
     "link":"http://localhost:3000/quiz"
 }
+###
 
+
+###
+POST http://localhost:5000/studentscore/
+Content-Type: application/json
+
+{   
+    "testId": "test_2",
+    "email":"ravisabbi7036@gmail.com",
+    "score":4,
+    "testDate":"2023/02/02"
+}
+###
+
+
+GET  http://localhost:5000/getscore/
+Content-Type: application/json
+
+{
+    "email":"ravisabbi7036@gmail.com"
+}
 ###

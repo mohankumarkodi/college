@@ -15,7 +15,7 @@ import axios from "axios";
 
 function Quiz() {
   const navigate = useNavigate();
-  const testName = "SampleTest1";
+  const testName = "SampleTest3";
   const today = new Date();
 
   const questions = [
@@ -80,14 +80,14 @@ function Quiz() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [answersObj, setAnswersObj] = useState({});
   const [totalScore, setTotalScore] = useState(0);
-  const [errorMsg,setErrorMsg] = useState("")
+  const [errorMsg, setErrorMsg] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState(
     questions[questionIndex]
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const userDetails = JSON.parse(Cookies.get("userDetails"));
-  const {email} = userDetails;
+  const { email } = userDetails;
 
   const handleOptionChange = (event) => {
     // console.log(event.target);
@@ -96,10 +96,8 @@ function Quiz() {
     console.log(selectedOption);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    
-
 
     let score = 0;
     Object.keys(answersObj).forEach((questionId) => {
@@ -111,32 +109,33 @@ function Quiz() {
         score++;
       }
     });
-
+    console.log(score);
     setTotalScore(score);
 
     toggleModal();
-    const submitDetails ={
-      testId:testName,
-      email:email,
-      score:totalScore,
-      testDate:today
-      
-    }
-    console.log(submitDetails)
-    axios.post("/studentscore",submitDetails)
-    .then((response)=>{
-      if(response.statusText=== "OK"){
-        console.log(response.data)
-      }
-    }).catch((e)=>{
-      const data = e.response.data;
-      console.log(data);
-      if(data.constraint === "test_details_test_id_student_email_key"){
-        setErrorMsg("you are already completed this test")
-      }
-    })
+    const submitDetails = {
+      testId: testName,
+      email: email,
+      score: score,
+      testDate: today,
+    };
+    console.log(submitDetails);
+    axios
+      .post("/studentscore", submitDetails)
+      .then((response) => {
+        if (response.statusText === "OK") {
+          console.log(response.data);
+        }
+      })
+      .catch((e) => {
+        const data = e.response.data;
+        console.log(data);
+        if (data.constraint === "test_details_test_id_student_email_key") {
+          setErrorMsg("you have already completed this test");
+        }
+      });
 
-  navigate("/", { replace: true });
+    navigate("/", { replace: true });
   };
 
   const handlePreviousQuestion = () => {
