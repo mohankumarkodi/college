@@ -5,6 +5,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string().required("Required"),
@@ -33,6 +35,7 @@ function MyVerticallyCenteredModal(props) {
         .then((response) => {
           setErrorMsg("");
           if (response.statusText === "OK") {
+            toast.success("Student added successfully")
             props.onHide(false);
             navigate("/admintable", { replace: true });
           }
@@ -63,6 +66,7 @@ function MyVerticallyCenteredModal(props) {
       centered
     >
       <Modal.Header closeButton>
+      
         <Modal.Title id="contained-modal-title-vcenter">
           Add Student form
         </Modal.Title>
@@ -141,6 +145,7 @@ function MyVerticallyCenteredModal(props) {
                   </Button>
                 </Col>
                 <Form.Text>{errorMsg}</Form.Text>
+                <ToastContainer/>
               </Row>
             </Form>
           </Col>

@@ -5,11 +5,14 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
+  Form,
+  FormControl,
 } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import MyVerticallyCenteredModal from "../AddStudentForm";
-//import SideBar from "../SideBar";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import axios from "axios";
 import Sidebar1 from "../SampleSideBar";
@@ -21,6 +24,8 @@ function AdminTable() {
   const [sendMailInfo, setSendMailInfo] = useState("");
   const [activePage, setActivePage] = useState(1);
   const [selectedMail, setSelectedMail] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  //const [filteredStudentList, setFilteredStudentList] = useState([]);
   const ITEMS_PER_PAGE = 5;
 
   const onclickInvite = (email) => {
@@ -30,7 +35,7 @@ function AdminTable() {
 
   const sendInvite = () => {
     const email = selectedMail;
-    const link = "http://localhost:3000/quiz";
+    const link = "http://192.168.1.249:3000";
     console.log(email, link);
     const body = { to: email, link };
     console.log(body);
@@ -39,16 +44,18 @@ function AdminTable() {
       .then((response) => {
         console.log(response.data);
         if (response.statusText === "OK") {
+          toast.success("Mail sent successfully ");
           setSendMailInfo(response.data);
         }
       })
       .catch((e) => {
         setSendMailInfo(e);
+        toast.warning("Mail not sent");
       });
     toggleInviteModal();
   };
 
-  console.log(sendMailInfo);
+  // console.log(sendMailInfo);
 
   const toggleInviteModal = () => {
     setInviteModal(!inviteModal);
@@ -84,14 +91,35 @@ function AdminTable() {
       });
   }, []);
 
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredStudentList = studentList.filter((student) =>
+    student.fullname.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const indexOfLastItem = activePage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const currentItems = studentList.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredStudentList.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const totalPages = Math.ceil(studentList.length / ITEMS_PER_PAGE);
+    const ellipsis = <Pagination.Ellipsis disabled />;
+
     for (let i = 1; i <= totalPages; i++) {
+      if (totalPages > 10 && i !== 1 && i !== totalPages) {
+        if (i < activePage - 2 || i > activePage + 2) {
+          if (!pageNumbers.includes(ellipsis)) {
+            pageNumbers.push(ellipsis);
+          }
+          continue;
+        }
+      }
       pageNumbers.push(
         <Pagination.Item
           key={i}
@@ -102,6 +130,7 @@ function AdminTable() {
         </Pagination.Item>
       );
     }
+
     const prevButton = (
       <Pagination.Prev
         disabled={activePage === 1}
@@ -114,9 +143,9 @@ function AdminTable() {
         onClick={() => setActivePage(activePage + 1)}
       />
     );
+
     return [prevButton, pageNumbers, nextButton];
   };
-
   return (
     <Container fluid className="d-flex flex-row">
       {/* <SideBar /> */}
@@ -141,6 +170,15 @@ function AdminTable() {
           onHide={() => setModalShow(false)}
         />
         <Container fluid className="admin-table-align">
+          <Form className=" mb-3 admin-table-search-input">
+            <FormControl
+              type="text"
+              placeholder="Search by student name"
+              className="mr-sm-2"
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+          </Form>
           <Table
             responsive
             striped
@@ -186,6 +224,7 @@ function AdminTable() {
         </Container>
       </Container>
       {emailModal()}
+      <ToastContainer />
     </Container>
   );
 }

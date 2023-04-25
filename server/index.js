@@ -5,8 +5,6 @@ const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-// const { ServiceBroker } = require("moleculer");
-// const MailService = require("moleculer-mail");
 
 const PORT = process.env.PORT;
 const app = express();
@@ -14,7 +12,6 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 const client = require("./client");
-// const broker = new ServiceBroker();
 
 const dbConnection = () => {
   try {
@@ -107,7 +104,7 @@ app.post("/addstudent/", async (req, res) => {
   const role = "student";
 
   const query = {
-    text: "INSERT INTO user_details(username, fullname, email, date_of_birth, gender, role, password) values($1,$2,$3,$4,$5,$6,$7)",
+    text: "INSERT INTO user_details(username, fullname, email, date_of_birth, gender, role, password) VALUES($1,$2,$3,$4,$5,$6,$7)",
     values: [
       username,
       fullname,
@@ -150,50 +147,6 @@ app.get("/getstudents/", (req, res) => {
 });
 
 // SEND MAIL
-// app.post("/sendmail/", (req, res) => {
-//   const { to, link } = req.body;
-//   console.log(to, link);
-//   const mailService = broker.createService({
-//     mixins: [MailService],
-//     settings: {
-//       transport: {
-//         host: "smtp.gmail.com",
-//         port: 465,
-//         secure: true,
-//         auth: {
-//           user: "naidukutility@gmail.com",
-//           pass: process.env.EMAIL_PASSWORD,
-//         },
-//       },
-//     },
-//     actions: {
-//       sendWelcomeEmail(ctx) {
-//         const email = {
-//           from: "naidukutility@gmail.com",
-//           to: [to],
-//           subject: "Exam invitation!",
-//           html: `<h1>Dear Student,</h1><p>We have scheduled a test for you. Please go through the link ${link} and login with your credentials to take you test.</p>`,
-//         };
-//         return this.send(email)
-//           .then(() => {
-//             return { message: "Exam email sent successfully!" };
-//           })
-//           .catch((error) => {
-//             return { error: error.message };
-//           });
-//       },
-//     },
-//   });
-
-//   broker.start().then(() => {
-//     broker
-//       .call("mail.sendWelcomeEmail")
-//       .then((response) => console.log(response))
-//       .catch((error) => console.error(error));
-//   });
-// });
-
-// mail
 app.post("/sendmail/", (req, res) => {
   const { to, link } = req.body;
   console.log(to, link);
@@ -215,11 +168,12 @@ app.post("/sendmail/", (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
+        res.status(400);
         res.send(error);
-        console.log(error);
+        // console.log(error);
       } else {
         console.log(info);
-        res.send(info);
+        res.send(info).status(200);
       }
     });
   } catch (e) {
@@ -228,9 +182,44 @@ app.post("/sendmail/", (req, res) => {
   }
 });
 
+// ADD SCORE
+app.post("/studentscore/", (req, res) => {
+  const { testId, email, score, testDate } = req.body;
+  // console.log(testId, email, score);
+  const query = {
+    text: "INSERT INTO test_details(test_id, student_email, test_score, test_date) VALUES($1,$2,$3,$4)",
+    values: [testId, email, score, testDate],
+  };
+  client.query(query, (error, results) => {
+    if (error) {
+      res.status(400).send(error);
+    } else {
+      res.status(200).send(results);
+    }
+  });
+});
+
+// GET STUDENT SCORE
+app.get("/getscore/", (req, res) => {
+  const { email } = req.body;
+  const query = {
+    text: "SELECT * FROM test_details WHERE student_email = ($1)",
+    values: [email],
+  };
+  client.query(query, (error, results) => {
+    if (error) {
+      res.status(400).send(error);
+    } else {
+      res.status(200).send(results.rows);
+    }
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running`);
 });
+
+
 
 // const express = require("express");
 // const bcrypt = require("bcrypt");

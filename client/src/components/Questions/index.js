@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, Button, Container } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Container,
+  Modal,
+  ModalHeader,
+  ModalBody,
+} from "react-bootstrap";
+import Cookies from "js-cookie";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import "./index.css";
+import axios from "axios";
 
 function Quiz() {
   const navigate = useNavigate();
+  const testName = "SampleTest1";
+  const today = new Date();
 
   const questions = [
     {
       id: 1,
-      text: "1. India capital?",
+      text: "1. What is the Capital of India?",
       options: [
         { id: "a", text: "Delhi" },
         { id: "b", text: "hyderabad" },
@@ -20,18 +32,18 @@ function Quiz() {
     },
     {
       id: 2,
-      text: "2. who is the prime minster of India?",
+      text: "2. Who is the prime minster of India?",
       options: [
-        { id: "a", text: "amith shaw" },
+        { id: "a", text: "Amith Shaw" },
         { id: "b", text: "Rahul Gandhi" },
-        { id: "c", text: "Narendra moli" },
-        { id: "d", text: "rajnadh singh" },
+        { id: "c", text: "Narendra modi" },
+        { id: "d", text: "Rajnadh Singh" },
       ],
       correctAnswer: "c",
     },
     {
       id: 3,
-      text: "3. 9+8=??",
+      text: "3. 9+8=?",
       options: [
         { id: "a", text: "20" },
         { id: "b", text: "15" },
@@ -42,18 +54,18 @@ function Quiz() {
     },
     {
       id: 4,
-      text: "4. how many planets in our solar system?",
+      text: "4. How many planets in our solar system?",
       options: [
         { id: "a", text: "7" },
         { id: "b", text: "6" },
         { id: "c", text: "5" },
         { id: "d", text: "8" },
       ],
-      correctAnswer: "a",
+      correctAnswer: "d",
     },
     {
       id: 5,
-      text: "5. What is the formula for water?",
+      text: "5. What is the chemical formula for water?",
       options: [
         { id: "a", text: "H2O" },
         { id: "b", text: "CO2" },
@@ -64,38 +76,125 @@ function Quiz() {
     },
   ];
 
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedOptions, setSelectedOptions] = useState({});
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [answersObj, setAnswersObj] = useState({});
+  const [totalScore, setTotalScore] = useState(0);
+  const [errorMsg,setErrorMsg] = useState("")
+  const [currentQuestion, setCurrentQuestion] = useState(
+    questions[questionIndex]
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const userDetails = JSON.parse(Cookies.get("userDetails"));
+  const {email} = userDetails;
 
   const handleOptionChange = (event) => {
-    const { name, value } = event.target;
-    setSelectedOptions({ ...selectedOptions, [name]: value });
-  };
-  const handleNextQuestion = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    }
-  };
+    // console.log(event.target);
+    setSelectedOption(event.target.value);
 
-  const handlePreviousQuestion = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-    }
+    console.log(selectedOption);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    
+
+
     let score = 0;
-    questions.forEach((question) => {
-      if (selectedOptions[question.id] === question.correctAnswer) {
-        score += 1;
+    Object.keys(answersObj).forEach((questionId) => {
+      const answer = answersObj[questionId];
+
+      const question = questions.find((q) => q.id === parseInt(questionId));
+
+      if (question.correctAnswer === answer) {
+        score++;
       }
-      console.log(score);
     });
-    navigate("/", { navigate: true });
+
+    setTotalScore(score);
+
+    toggleModal();
+    const submitDetails ={
+      testId:testName,
+      email:email,
+      score:totalScore,
+      testDate:today
+      
+    }
+    console.log(submitDetails)
+    axios.post("/studentscore",submitDetails)
+    .then((response)=>{
+      if(response.statusText=== "OK"){
+        console.log(response.data)
+      }
+    }).catch((e)=>{
+      const data = e.response.data;
+      console.log(data);
+      if(data.constraint === "test_details_test_id_student_email_key"){
+        setErrorMsg("you are already completed this test")
+      }
+    })
+
+  navigate("/", { replace: true });
   };
 
-  const currentQuestionData = questions[currentQuestion];
+  const handlePreviousQuestion = () => {
+    setQuestionIndex(questionIndex - 1);
+  };
+
+  const handleNextQuestion = (event) => {
+    event.preventDefault();
+    setQuestionIndex(questionIndex + 1);
+  };
+
+  useEffect(() => {
+    // const newAnswer = { [currentQuestion.id]: selectedOption };
+    // const updatedAnswerObj = { ...answersObj, ...newAnswer };
+
+    // setAnswersObj(updatedAnswerObj);
+    // setSelectedOption(null);
+
+    // let score = 0;
+
+    // Object.keys(answersObj).forEach((questionId) => {
+    //   const answer = answersObj[questionId];
+
+    //   const question = questions.find((q) => q.id === parseInt(questionId));
+
+    //   if (question.correctAnswer === answer) {
+    //     score++;
+    //   }
+    // });
+
+    // setTotalScore(score);
+
+    setCurrentQuestion(questions[questionIndex]);
+    setSelectedOption(answersObj[questionIndex + 1] || null);
+  }, [questionIndex]);
+
+  useEffect(() => {
+    const newAnswer = { [currentQuestion.id]: selectedOption };
+    const updatedAnswerObj = { ...answersObj, ...newAnswer };
+
+    setAnswersObj(updatedAnswerObj);
+  }, [selectedOption]);
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const scoreModal = () => {
+    return (
+      <Modal centered size="xs" show={isModalOpen} onHide={toggleModal}>
+        <ModalHeader closeButton></ModalHeader>
+        <ModalBody className="d-flex flex-column justify-content-center align-items-center">
+          {/* <h1>Hi {userDetails.fullname}</h1> */}
+          <h1>Score: {totalScore}</h1>
+        </ModalBody>
+      </Modal>
+    );
+  };
 
   return (
     <Container
@@ -106,43 +205,47 @@ function Quiz() {
         className="d-flex flex-column question-form-container"
         onSubmit={handleSubmit}
       >
-        <h5 className="question-heading">{currentQuestionData.text}</h5>
-        {currentQuestionData.options.map((option) => (
+        {/* {totalScore} */}
+        <h1 className="question-heading">{currentQuestion.text}</h1>
+        {currentQuestion.options.map((option) => (
           <Form.Check
             key={option.id}
             type="radio"
             label={option.text}
-            name={currentQuestionData.id}
+            name={currentQuestion.id}
             value={option.id}
-            checked={selectedOptions[currentQuestionData.id] === option.id}
             onChange={handleOptionChange}
-            className="question-options text-center"
+            className="question-options"
+            checked={selectedOption === option.id}
           />
         ))}
         <div className="mt-2 d-flex justify-content-between">
           <Button
+            className="form-btns"
             variant="primary"
             size={"lg"}
             onClick={handlePreviousQuestion}
-            disabled={currentQuestion === 0}
+            disabled={questionIndex === 0}
           >
-            Previous
+            <i class="bi bi-arrow-left"></i>
           </Button>
-          <Button
-            variant="primary"
-            size={"lg"}
-            onClick={handleNextQuestion}
-            disabled={currentQuestion === questions.length - 1}
-          >
-            Next
-          </Button>
+          {questionIndex < questions.length - 1 ? (
+            <Button
+              size={"lg"}
+              type="button"
+              className="form-btns"
+              onClick={handleNextQuestion}
+            >
+              <i class="bi bi-arrow-right"></i>
+            </Button>
+          ) : (
+            <Button className="primary" size={"lg"} type="submit">
+              Submit
+            </Button>
+          )}
         </div>
-        {currentQuestion === questions.length - 1 && (
-          <Button className="mt-2 " size={"lg"} type="submit">
-            Submit
-          </Button>
-        )}
       </Form>
+      {scoreModal()}
     </Container>
   );
 }

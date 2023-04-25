@@ -7,6 +7,7 @@ import Quiz from "./components/Questions";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute/AdminProtectedRoute";
 import Sidebar1 from "./components/SampleSideBar";
+import StudentTable from "./components/studentTable";
 
 
 import "./index.css";
@@ -19,6 +20,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/km" exact element={<Sidebar1 />} />
+        <Route path="/studentmarks" exact element={<StudentTable />} />
 
         <Route
           path="/"
